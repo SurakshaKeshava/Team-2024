@@ -12,8 +12,9 @@ class StudentScore:
     A class to manage student records in a CSV file.
 
     This class provides following operations:
-    - Store student data
     - Retrieve student data by roll number
+    - Store student data
+    - Calculate and update average scores for students
     - Exit the application
 
     Attributes:
@@ -157,6 +158,50 @@ class StudentScore:
         print("*********** Thank You ***********")
         sys.exit()
 
+    def average(self):
+        """
+        Calculates and adds the average score for each student to the CSV file.
+
+        Reads student scores from the CSV file, computes the average score for
+        English, Maths, and Science for each student, and writes the updated data
+        back to the CSV file with an additional 'Average' column.
+
+        If the 'Average' column is not already present in the CSV, it is added.
+
+        :return:None
+
+        """
+        logging.debug("Entering average method.")
+        self.csv_file.seek(0)
+        reader = csv.DictReader(self.csv_file)
+        rows = list(reader)
+        fieldnames = reader.fieldnames
+
+        if 'Average' not in fieldnames:
+            fieldnames.append('Average')
+        try:
+            for row in rows:
+                english_score = float(row['english'])
+                maths_score = float(row['maths'])
+                science_score = float(row['science'])
+
+                total = english_score + maths_score + science_score
+                count = 3
+                avg = total / count
+                row['Average'] = round(avg, 2)
+        except ValueError as e:
+            print(f"ValueError: {e}")
+            logging.error(f"ValueError: {e}")
+            return
+
+        with open(file_name, mode='w', newline='') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        print("Average added successfully")
+        logging.info("Average added successfully")
+
+
     def main_menu(self):
         """
         Displays the main menu and processes user choices to perform various operations.
@@ -164,7 +209,8 @@ class StudentScore:
         The menu provides options to:
         1. Retrieve student data
         2. Store student data
-        3. Exit the application
+        3. Calculates the Average
+        4. Exit the application
 
         The method continues to run in a loop until the user chooses to exit.
 
@@ -175,8 +221,9 @@ class StudentScore:
             print("\n*********** MENU ***********")
             print("1. Retrieve Student Data")
             print("2. Store Student Data")
-            print("3. Exit")
-            choice = input("Enter your choice (1/2/3): \n >>>")
+            print("3. Calculate Average")
+            print("4. Exit")
+            choice = input("Enter your choice (1/2/3/4): \n >>>")
 
             if choice == '1':
                 roll_no = input("Enter Rollno: ")
@@ -184,10 +231,12 @@ class StudentScore:
             elif choice == '2':
                 self.store_student_score()
             elif choice == '3':
+                self.average()
+            elif choice == '4':
                 self.exit()
             else:
                 logging.warning("Invalid Choice entered in MainMenu")
-                print("Invalid choice. Please enter 1, 2 or 3.")
+                print("Invalid choice. Please enter 1, 2, 3 or 4.")
 
 
 file_name = "Student_data.csv"
