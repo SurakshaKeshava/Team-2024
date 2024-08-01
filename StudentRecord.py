@@ -15,6 +15,7 @@ class StudentScore:
     - Retrieve student data by roll number
     - Store student data
     - Calculate and update average scores for students
+    - Display all student records sorted by a specified header
     - Exit the application
 
     Attributes:
@@ -128,7 +129,7 @@ class StudentScore:
 
         if any(row['Rollno'] == self.student_data['Rollno'] for row in reader):
             print(f"Rollno already exists: {self.student_data['Rollno']}")
-            logging.error(f"Rollno already exists: {self.student_data['Rollno']}")
+            logging.warning(f"Rollno already exists: {self.student_data['Rollno']}")
             return
 
         if all(self.student_data.values()):
@@ -138,7 +139,7 @@ class StudentScore:
                 writer.writerow(self.student_data)
             print("Stored successfully")
         else:
-            logging.error("Failed to store. Some fields are missing or empty")
+            logging.warning("Failed to store. Some fields are missing or empty")
             print("Failed to store. The following fields are missing or empty: ", end=' ')
             for key, value in self.student_data.items():
                 if not value:
@@ -201,6 +202,36 @@ class StudentScore:
         print("Average added successfully")
         logging.info("Average added successfully")
 
+    def display_all(self, header, ascending=True):
+        """
+        Displays all student records sorted by the specified header.
+
+        Reads student records from the CSV file, sorts them based on the provided
+        header in either ascending or descending order, and prints the sorted
+        records.
+
+        :param header: The column name by which to sort the records.
+        :param ascending: Indicates the sort order (True for ascending, False for descending). Defaults to True.
+        :return: None
+
+        """
+        logging.debug("Entering display_all method")
+        self.csv_file.seek(0)
+        reader = csv.DictReader(self.csv_file)
+        rows = list(reader)
+        fieldnames = reader.fieldnames
+
+        if header not in fieldnames:
+            logging.error(f"Error: Provided header '{header}' does not match any CSV column.")
+            print(f"Error: Provided header '{header}' does not match any CSV column.")
+            return
+
+        rows.sort(key=lambda row: int(row[header]) if row[header].isdigit() else row[header], reverse=not ascending)
+
+        print("".join(fieldnames))
+        for row in rows:
+            print(','.join(str(row[field]) for field in fieldnames))
+
 
     def main_menu(self):
         """
@@ -210,7 +241,8 @@ class StudentScore:
         1. Retrieve student data
         2. Store student data
         3. Calculates the Average
-        4. Exit the application
+        4. Display all student records sorted by a specified header
+        5. Exit the application
 
         The method continues to run in a loop until the user chooses to exit.
 
@@ -222,8 +254,9 @@ class StudentScore:
             print("1. Retrieve Student Data")
             print("2. Store Student Data")
             print("3. Calculate Average")
-            print("4. Exit")
-            choice = input("Enter your choice (1/2/3/4): \n >>>")
+            print("4. Display Sort Records")
+            print("5. Exit")
+            choice = input("Enter your choice (1/2/3/4/5): \n >>>")
 
             if choice == '1':
                 roll_no = input("Enter Rollno: ")
@@ -233,13 +266,22 @@ class StudentScore:
             elif choice == '3':
                 self.average()
             elif choice == '4':
+                header = input("Enter header: ")
+                ascending = input("Sort order (True/False)?: ").strip().lower() in ['true', 1, '']
+                self.display_all(header, ascending)
+            elif choice == '5':
                 self.exit()
             else:
                 logging.warning("Invalid Choice entered in MainMenu")
-                print("Invalid choice. Please enter 1, 2, 3 or 4.")
+                print("Invalid choice. Please enter 1, 2, 3, 4 or 5.")
 
 
-file_name = "Student_data.csv"
-student = StudentScore(file_name)
-student.main_menu()
+if __name__ == "__main__":
+    file_name = "Student_data.csv"
+    student = StudentScore(file_name)
+    try:
+        student.main_menu()
+    finally:
+        student.csv_file.close()
+        logging.info(f"Closing {file_name}")
 
