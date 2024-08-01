@@ -1,0 +1,11 @@
+2024-08-01 15:06:01,577 - INFO - Student_data.csv opened Successfully
+2024-08-01 15:06:03,676 - DEBUG - Entering StoreStudentScore method.
+2024-08-01 15:06:05,044 - DEBUG - Entering enter_data method.
+2024-08-01 15:06:31,763 - DEBUG - Student data entered: {'Rollno': '13', 'name': 'Jiya', 'english': '67', 'maths': '78', 'science': '56'}
+2024-08-01 15:06:32,980 - DEBUG - Entering save method.
+2024-08-01 15:06:42,059 - DEBUG - Entering average method.
+2024-08-01 15:06:42,062 - INFO - Average added successfully
+2024-08-01 15:06:47,604 - DEBUG - Entering display_all method
+2024-08-01 15:06:54,123 - DEBUG - Entering display_all method
+2024-08-01 15:06:57,652 - INFO - Exiting the application.
+2024-08-01 15:06:57,652 - INFO - Closing Student_data.csv
