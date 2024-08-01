@@ -1,4 +1,5 @@
 import csv
+import sys
 import logging
 
 # Setting up logging to write debug and higher level messages to 'Log.log' with timestamp and log level.
@@ -10,8 +11,9 @@ class StudentScore:
     """
     A class to manage student records in a CSV file.
 
-    This class provides following operation:
+    This class provides following operations:
     - Retrieve student data by roll number
+    - Exit the application
 
     Attributes:
         file_name (str): The name of the CSV file used to store student records.
@@ -56,29 +58,50 @@ class StudentScore:
         logging.error(f"No records found for rollno: {roll_no}")
 
 
+    def exit(self):
+        """
+        Exits the application and logs an exit message.
+
+        Displays a “Thank You” message to the user and terminates the program execution.
+        The termination is achieved by calling sys.exit(), which ends the process.
+
+        :return:None
+
+        """
+        logging.info("Exiting the application.")
+        print("*********** Thank You ***********")
+        sys.exit()
+
+    def main_menu(self):
+        """
+        Displays the main menu and processes user choices to perform various operations.
+
+        The menu provides options to:
+        1. Retrieve student data
+        2. Exit the application
+
+        The method continues to run in a loop until the user chooses to exit.
+
+        :return: None
+
+        """
+        while True:
+            print("\n*********** MENU ***********")
+            print("1. Retrieve Student Data")
+            print("2. Exit")
+            choice = input("Enter your choice (1/2): \n >>>")
+
+            if choice == '1':
+                roll_no = input("Enter Rollno: ")
+                self.retrieve_student_score(roll_no)
+            elif choice == '2':
+                self.exit()
+            else:
+                logging.warning("Invalid Choice entered in MainMenu")
+                print("Invalid choice. Please enter 1 or 2.")
+
+
 file_name = "Student_data.csv"
 student = StudentScore(file_name)
-roll_no = input("Enter the Rollno: ")
-student.retrieve_student_score(roll_no)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+student.main_menu()
 
